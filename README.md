@@ -24,10 +24,6 @@ git clone https://github.com/MengyaoShi/MuMuTautauSkimmerCmssw8
 
 mv MuMuTautauSkimmerCmssw8 MuMuTauTauSkimmer
 
-cd ..
-
-git clone https://github.com/MengyaoShi/Tools
-
 vim DrellYan.txt
 
 i
@@ -38,6 +34,13 @@ root://cms-xrd-global.cern.ch///store/mc/RunIISpring16reHLT80/DYJetsToLL_M-50_Tu
 
 :wq
 
+cd ..
+
+git clone https://github.com/MengyaoShi/Tools
+
+Before scram b, change mshi to ktos
+
+Ok, now double check, you have CMSSW_8_0_17/src , inside this folder there are only two folders GGHAA2Mu2TauAnalysis and Tools, inside GGHAA2Mu2TauAnlysis there is only MuMuTauTauSkimmer and DrellYan.txt
 
 scram b
 
