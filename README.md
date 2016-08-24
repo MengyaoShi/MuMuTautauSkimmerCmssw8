@@ -1,11 +1,12 @@
 # MuMuTauTauSkimmer
+In CMSSW8
 
-This Skimmer do basically job to skim down dataset of Drell-Yan background to what we are interested. tauSelectionSkim_MC.py is the corresponding
+This Skimmer do basically job to skim down dataset of Drell-Yan background to what we are interested. test/DiMuSelectorSkim.py is the corresponding
 
 python file.
 
-More contributions are needed from Jet Cleaning to drop all the tau related information in the old dataset, and add cleaned jets to create new dataset.
+Mu45Selector is the trigger I have not made it work yet, comment out that line, and you can start from here add tau-related tags.
 
-DrellYan.txt in the main folder is what provides you where our background dataset is from.
+you need to create a DrellYan.txt one folder above the entire folders and it contains oneline,
 
-Good luck!
+root://cms-xrd-global.cern.ch///store/mc/RunIISpring16reHLT80/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/AODSIM/PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/40000/003A70D5-E55C-E611-9B14-0025905C53A8.root
