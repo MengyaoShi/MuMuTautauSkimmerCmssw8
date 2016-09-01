@@ -221,7 +221,7 @@ TriggerObjectFilter<T>::filter( edm::Event& iEvent, const edm::EventSetup& iSetu
       if ((*iMyHLT).label() == *iHLT) {
         //cout << "######## " << *iHLT << endl;
         myHLTFilter = (*iMyHLT).label();
-        cout<<" myHLTFilter="<< myHLTFilter<<std::endl;
+        //cout<<" myHLTFilter="<< myHLTFilter<<std::endl;
 	triggerInMenu[(*iMyHLT).label()] = true;
       }
     }
@@ -231,11 +231,11 @@ TriggerObjectFilter<T>::filter( edm::Event& iEvent, const edm::EventSetup& iSetu
   const trigger::TriggerObjectCollection& TOC( trgEvent->getObjects() );
   //choose the right sub-filter depending on the HLT path name
   std::vector<std::string> filters;
-   std::cout<< "Bad trigger diagonise? "<< theRightHLTTag_.label()<<std::endl;
-   for(unsigned int  i=0; i< hltConfig_.moduleLabels(theRightHLTTag_.label()).size();i++)
-   {
-   std::cout<<"hltConfig_.moduleLabels="<<(hltConfig_.moduleLabels( theRightHLTTag_.label())[i]) << std::endl;
-   }
+   //std::cout<< "Bad trigger diagonise? "<< theRightHLTTag_.label()<<std::endl;
+  // for(unsigned int  i=0; i< hltConfig_.moduleLabels(theRightHLTTag_.label()).size();i++)
+  // {
+  // std::cout<<"hltConfig_.moduleLabels="<<(hltConfig_.moduleLabels( theRightHLTTag_.label())[i]) << std::endl;
+  // }
    try { filters = hltConfig_.moduleLabels( theRightHLTTag_.label() ); }
    catch (std::exception ex) { cout << "bad trigger\n"; }
    for(int i=0; i != trgEvent->sizeFilters(); ++i) {
@@ -257,11 +257,11 @@ TriggerObjectFilter<T>::filter( edm::Event& iEvent, const edm::EventSetup& iSetu
    const edm::TriggerNames &trgNames = iEvent.triggerNames(*pTrgResults);
    const unsigned int trgIndex = trgNames.triggerIndex(myHLTFilter);
    bool firedHLT = (trgIndex < trgNames.size()) && (pTrgResults->accept(trgIndex));
-   std::cout<<"firedHLT?="<< firedHLT<<std::endl;
-   std::cout<<"trgIndex?="<< trgIndex<<std::endl;
-   std::cout<<"trgNames.size()="<<trgNames.size()<<std::endl;
+   //std::cout<<"firedHLT?="<< firedHLT<<std::endl;
+   //std::cout<<"trgIndex?="<< trgIndex<<std::endl;
+   //std::cout<<"trgNames.size()="<<trgNames.size()<<std::endl;
    //std::cout<<"if pTrgResults accept trgIndex?="<< (pTrgResults->accept(trgIndex)) << std::endl;
-   std::cout<<"If trgIndex< trgNames.size()?="<< (trgIndex < trgNames.size()) <<std::endl;
+   //std::cout<<"If trgIndex< trgNames.size()?="<< (trgIndex < trgNames.size()) <<std::endl;
    std::vector<unsigned int> passingRecoObjRefKeys1;
    std::vector<unsigned int> passingRecoObjRefKeys1_NoHLT;
  

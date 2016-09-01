@@ -300,7 +300,7 @@ process.genTauMuSelector = cms.EDFilter(
 
 process.filter_1 = hlt.hltHighLevel.clone(
     TriggerResultsTag=cms.InputTag("TriggerResults", "","HLT2" ),
-    HLTPaths = [ 'HLT_Mu45_eta2p1_v*'],
+    HLTPaths = [ 'HLT_Mu45_eta2p1_v3'],
     throw = True
     )
 process.genMatchedSelector = cms.EDFilter(
@@ -312,7 +312,7 @@ process.genMatchedSelector = cms.EDFilter(
     genTauDecayIDPSet = AMuMuPSet,      #need to know the pseudoscalar a mother
     applyPTCuts = cms.bool(False),        #should always be false
     countKShort = cms.bool(False),        #should always be false
-    dR = cms.double(0.02),
+    dR = cms.double(0.01),
     Bins=cms.vdouble(2.0,4.0),                 #dR criteria for matching
     minNumGenObjectsToPassFilter = cms.uint32(1) #EDFilter returns true if >=1 gen-matched reco muon is found
     )
@@ -323,9 +323,9 @@ process.Mu45Selector = cms.EDFilter(
     triggerEventTag = cms.untracked.InputTag("hltTriggerSummaryAOD", "", "HLT2"),#for sure it's HLT2 since this is the only tuple in edmDumpEventContent
     triggerResultsTag = cms.untracked.InputTag("TriggerResults", "", "HLT2"),#selections are only SIM, RECO or HLT2
     MatchCut = cms.untracked.double(0.01),
-    hltTags = cms.VInputTag(cms.InputTag("HLT_Mu45_eta2p1_v2", "", "HLT")
+    hltTags = cms.VInputTag(cms.InputTag("HLT_Mu45_eta2p1_v3", "", "HLT2")
                             ),
-    theRightHLTTag = cms.InputTag("HLT_Mu45_eta2p1_v2"),#TTBar background is v2
+    theRightHLTTag = cms.InputTag("HLT_Mu45_eta2p1_v3"),#TTBar background is v2
     theRightHLTSubFilter1 = cms.InputTag("hltL3fL1sMu16orMu25L1f0L2f10QL3Filtered45e2p1Q"),
     HLTSubFilters = cms.untracked.VInputTag(""),
     minNumObjsToPassFilter1= cms.uint32(1),
@@ -502,8 +502,8 @@ process.MuMuSequenceSelector=cms.Sequence(
         process.Mu1Mu2PtRankMuonID*
        process.Isolation*
         process.PtEtaCut*
-       # process.genAMuSelector*
-       # process.genMatchedSelector*     
+#        process.genAMuSelector*
+#        process.genMatchedSelector*     
 #        process.filter_1
         process.Mu45Selector
 #        process.AMuTriggerAnalyzer
