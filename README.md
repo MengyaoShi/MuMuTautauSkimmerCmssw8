@@ -34,6 +34,8 @@ root://eoscms.cern.ch//eos/cms/store/user/mshi/DrellYanCmssw8.root
 
 ( I copied this root file to my eos space as DrellYanCmssw8.root root://159.93.229.144:1095///store/mc/RunIISpring16reHLT80/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/AODSIM/PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/40000/003A70D5-E55C-E611-9B14-0025905C53A8.root)
 
+(/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16reHLT80-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/AODSIM)
+
 :wq
 
 cd ..
