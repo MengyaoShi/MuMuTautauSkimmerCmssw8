@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 from subprocess import *
 import FWCore.Utilities.FileUtils as FileUtils
-mylist=FileUtils.loadListFromFile('/afs/cern.ch/work/m/mshi/private/CMSSW_8_0_17/src/GGHAA2Mu2TauAnalysis/DrellYan.txt')
+mylist=FileUtils.loadListFromFile('/afs/cern.ch/work/m/mshi/private/CMSSW_8_0_17/src/GGHAA2Mu2TauAnalysis/Kyle125.txt')
 process = cms.Process("SKIM")
 
 #PDG IDs
@@ -59,6 +59,7 @@ process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring(*myl
 
 process.source.inputCommands = cms.untracked.vstring("keep *")
 
+process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 #for L1GtStableParametersRcd
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 
@@ -73,7 +74,7 @@ process.GlobalTag.globaltag = cms.string('80X_mcRun2_asymptotic_v14') # CMSSW 8
 process.load("Configuration.Geometry.GeometryRecoDB_cff")
 process.load("RecoTauTag.Configuration.RecoPFTauTag_cff")
 #process.load("RecoTauTag.RecoTau.RecoTauPiZeroProducer_cfi")
-#process.load('Tools/CleanJets/cleanjets_cfi')
+process.load('Tools/CleanJets/cleanjets_cfi')
 
 #define a parameter set to be passed to all modules that utilize GenTauDecayID for signal taus
 AMuMuPSet = cms.PSet(momPDGID = cms.vint32(A_PDGID),
@@ -151,7 +152,7 @@ skimEventContent = cms.PSet(
 
     "drop *_hpsPFTauDiscrimination*_*_RECO",
     "drop *_hpsPFTauProducer_*_RECO",
- #   "drop *_recoTauAK4PFJets08Region_*_SKIM",
+    "drop *_recoTauAK4PFJets08Region_*_SKIM",
  #   "drop *_ak4PFJetTracksAssociatorAtVertex_*_SKIM",
  #   "drop *_ak4PFJetsCHS_*_SKIM",
  #   "drop *_combinatoricRecoTausDiscriminationByLeadingPionPtCut_*_SKIM",
@@ -198,7 +199,7 @@ from RecoBTag.ImpactParameter.impactParameter_cff import *
 from RecoBTag.SecondaryVertex.secondaryVertex_cff import *
 process.impactParameterTagInfos=process.impactParameterTagInfos.clone()
 process.impactParameterTagInfos.jetTracks = cms.InputTag("ak4JetTracksAssociatorAtVertex")
-#process.ak4JetTracksAssociatorAtVertex.jets = cms.InputTag('CleanJets','ak4PFJetsNoMu','SKIM')
+process.ak4JetTracksAssociatorAtVertex.jets = cms.InputTag('CleanJets','ak4PFJetsNoMu','SKIM')
 process.ak4JetTracksAssociatorAtVertex.tracks = cms.InputTag("generalTracks")
 
 	
@@ -431,21 +432,20 @@ process.genMatchedTauMuSelector = cms.EDFilter(
 
 #clean the jets of soft muons, then rebuild the taus
 
-#process.CleanJets.muonSrc=cms.InputTag('tauMuonPtSelector') # 
-#process.CleanJets.PFCandSrc = cms.InputTag('particleFlow')
-#process.CleanJets.cutOnGenMatches = cms.bool(False)
-#process.CleanJets.outFileName = cms.string('CleanJets.root')
-#process.recoTauAK4PFJets08Region.src = cms.InputTag("CleanJets", "ak4PFJetsNoMu", "SKIM")
-#process.ak4PFJetTracksAssociatorAtVertex.jets = cms.InputTag('CleanJets', 'ak4PFJetsNoMu', 'SKIM')
-#process.recoTauAK4PFJets08Region.src = cms.InputTag('CleanJets', 'ak4PFJetsNoMu', 'SKIM')
-#process.ak4PFJetsCHS.jetSrc = cms.InputTag('CleanJets', 'ak4PFJetsNoMu', 'SKIM')
-#process.ak4PFJetsRecoTauChargedHadrons.jetSrc = cms.InputTag('CleanJets', 'ak4PFJetsNoMu', 'SKIM')
-#process.combinatoricRecoTaus.jetSrc = cms.InputTag('CleanJets', 'ak4PFJetsNoMu', 'SKIM')
+process.CleanJets.muonSrc=cms.InputTag('tauMuonPtSelector') # 
+process.CleanJets.PFCandSrc = cms.InputTag('particleFlow')
+process.CleanJets.cutOnGenMatches = cms.bool(False)
+process.CleanJets.outFileName = cms.string('CleanJets.root')
+process.ak4PFJetTracksAssociatorAtVertex.jets = cms.InputTag('CleanJets', 'ak4PFJetsNoMu', 'SKIM')
+process.recoTauAK4PFJets08Region.src = cms.InputTag('CleanJets', 'ak4PFJetsNoMu', 'SKIM')
+process.ak4PFJetsLegacyHPSPiZeros.jetSrc = cms.InputTag('CleanJets', 'ak4PFJetsNoMu', 'SKIM')
+process.ak4PFJetsRecoTauChargedHadrons.jetSrc = cms.InputTag('CleanJets', 'ak4PFJetsNoMu', 'SKIM')
+process.combinatoricRecoTaus.jetSrc = cms.InputTag('CleanJets', 'ak4PFJetsNoMu', 'SKIM')
 
 process.recoTauCommonSequence = cms.Sequence(   process.Mu3*
 						process.Mu3ID*
 						process.tauMuonPtSelector*
-					#	process.CleanJets*
+						process.CleanJets*
 						process.ak4PFJetTracksAssociatorAtVertex*
 						process.recoTauAK4PFJets08Region*
 						process.recoTauPileUpVertices*
@@ -509,9 +509,9 @@ process.MuMuSequenceSelector=cms.Sequence(
 #        process.AMuTriggerAnalyzer
 )
 
-process.noSelectionSequence = cms.Sequence(process.MuMuSequenceSelector
-                                       #    process.PFTau*
-                                        #   process.muHadTauSelector
+process.noSelectionSequence = cms.Sequence(process.MuMuSequenceSelector*
+                                           process.PFTau*
+                                           process.muHadTauSelector
                                           # process.tauMuonAnalyzer*
                                           # process.btagging
                                           # process.RECOAnalyze
