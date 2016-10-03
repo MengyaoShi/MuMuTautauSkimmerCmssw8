@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 from subprocess import *
 import FWCore.Utilities.FileUtils as FileUtils
-mylist=FileUtils.loadListFromFile('/afs/cern.ch/work/m/mshi/private/CMSSW_8_0_17/src/GGHAA2Mu2TauAnalysis/Kyle125.txt')
+mylist=FileUtils.loadListFromFile('/afs/cern.ch/work/m/mshi/private/CMSSW_8_0_17/src/GGHAA2Mu2TauAnalysis/testDYHighMass.txt')
 process = cms.Process("SKIM")
 
 #PDG IDs
@@ -54,7 +54,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1000)
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True),
                 SkipEvent = cms.untracked.vstring('ProductNotFound'))
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
 process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring(*mylist))
 
 process.source.inputCommands = cms.untracked.vstring("keep *")
@@ -147,46 +147,28 @@ skimEventContent = cms.PSet(
     "drop *_uncleanedOnlyGsfElectron*_*_*",
     "drop recoJPTJet_*_*_*",
     "drop recoPFMET_*_*_*",
-##     "drop *_photons_*_*",
-##     "drop *_photonCore_*_*",
-
+    "drop *_photons_*_*",
+    "drop *_photonCore_*_*",
     "drop *_hpsPFTauDiscrimination*_*_RECO",
     "drop *_hpsPFTauProducer_*_RECO",
     "drop *_recoTauAK4PFJets08Region_*_SKIM",
- #   "drop *_ak4PFJetTracksAssociatorAtVertex_*_SKIM",
- #   "drop *_ak4PFJetsCHS_*_SKIM",
- #   "drop *_combinatoricRecoTausDiscriminationByLeadingPionPtCut_*_SKIM",
- #   "drop *_combinatoricRecoTausHPSSelector_*_SKIM",
- #   "drop *_hpsSelectionDiscriminator_*_SKIM",
- #   "drop *_combinatoricRecoTaus_*_SKIM",
- #   "drop *_hpsPFTauProducerSansRefs_*_SKIM",
- #   "drop *_pfRecoTauTagInfoProducer_*_SKIM",
- #   "drop *_recoTauPileUpVertices_*_SKIM",
+    "drop *_combinatoricRecoTaus_*_SKIM",
+    "drop *_hpsPFTauProducerSansRefs_*_SKIM",
+    "drop *_pfRecoTauTagInfoProducer_*_SKIM",
+    "drop *_recoTauPileUpVertices_*_SKIM",
     "drop *_correctedHybridSuperClusters_*_*",
     "drop *_correctedMulti5x5SuperClustersWithPreshower_*_*",
     "drop *_*phPFIsoValue*04PFIdPFIso_*_*",
     "drop *_*TagInfos*_*_*",
-#    "drop *_ghostTrackBJetTags_*_SKIM",
-#    "drop *_jet*ProbabilityBJetTags_*_SKIM",
-#    "drop *_simpleSecondaryVertexHigh*BJetTags_*_SKIM",
-#    "drop *_trackCountingHigh*BJetTags_*_SKIM",
-#    "drop CorrMETData_*_*_SKIM",
-    "drop *_*NoNu_*_*"
-    #added 2-Jul-13 after estimating data skim size
-##     "drop *_clusterSummaryProducer_*_*",
-##     "drop *_hcalnoise_*_*",
-##     "drop *_castorDigis_*_*",
-##     "drop *_hcalDigis_*_*",
-##     "drop double_ak4PFJets_rho*_*",
-##     "drop double_ak4PFJets_sigma*_*",
-##     "drop *_tevMuons_*_*",
-##     "drop recoIsoDepositedmValueMap_*_*_*",
-##     "drop *_logErrorHarvester_*_*",
-##     "drop *_l1extraParticles_*_*",
-##     "drop *_particleFlowTmp_*_*",
-##     "drop *_particleFlowCluster*_*_*",
-##     "drop *_particleFlowRecHit*_*_*",
-##     "drop recoPFCandidates_CleanJets_*_SKIM"
+    "drop *_*NoNu_*_*",
+    "drop *_clusterSummaryProducer_*_*",
+    "drop *_hcalnoise_*_*",
+    "drop *_castorDigis_*_*",
+    "drop *_hcalDigis_*_*",
+    "drop *_tevMuons_*_*",
+    "drop *_logErrorHarvester_*_*",
+    "drop *_particleFlowTmp_*_*",
+    "drop *_particleFlowRecHit*_*_*"
     )
   ) 
 
@@ -236,8 +218,8 @@ process.MuonIWant = cms.EDFilter('MuonRefSelector',
 )
 process.HighestPtAndMuonOppositeSignDRSelector=cms.EDFilter('HighestPtAndMuonOppositeSignDRSelector',
                                                muonTag=cms.InputTag('MuonIWant'),
-					       dRCut=cms.double(2.0),
-                                               Mu2PtCut=cms.double(5.0)
+					       dRCut=cms.double(1.0),
+                                               Mu2PtCut=cms.double(20.0)
 )
 process.Mu1Mu2PtRankMuonID=cms.EDFilter(
   'HighestSecondHighestPtSelector',
@@ -323,11 +305,12 @@ process.Mu45Selector = cms.EDFilter(
     genParticleTag = cms.InputTag('genParticles'),
     triggerEventTag = cms.untracked.InputTag("hltTriggerSummaryAOD", "", "HLT2"),#for sure it's HLT2 since this is the only tuple in edmDumpEventContent
     triggerResultsTag = cms.untracked.InputTag("TriggerResults", "", "HLT2"),#selections are only SIM, RECO or HLT2
-    MatchCut = cms.untracked.double(1.00),
+    MatchCut = cms.untracked.double(0.01),
     hltTags = cms.VInputTag(cms.InputTag("HLT_Mu45_eta2p1_v3", "", "HLT2")
                             ),
     theRightHLTTag = cms.InputTag("HLT_Mu45_eta2p1_v3","","HLT2"),#TTBar background is v2
-    theRightHLTSubFilter1 = cms.InputTag("hltL3fL1sMu22Or25L1f0L2f10QL3Filtered45e2p1Q","","HLT2"),
+    #theRightHLTSubFilter1 = cms.InputTag("hltL3fL1sMu16orMu25L1f0L2f10QL3Filtered45e2p1Q","","HLT2"),#v2
+     theRightHLTSubFilter1 = cms.InputTag("hltL3fL1sMu22Or25L1f0L2f10QL3Filtered45e2p1Q","","HLT2"),
     HLTSubFilters = cms.untracked.VInputTag(""),
     minNumObjsToPassFilter1= cms.uint32(1),
     outFileName=cms.string("Mu45Selector.root")
@@ -390,7 +373,7 @@ process.Mu3ID = cms.EDFilter('CustomMuonSelector',
 process.tauMuonPtSelector=cms.EDFilter('PTETACUT',
                                  muonTag=cms.InputTag('Mu3ID'),
                                  Eta=cms.double(2.3),
-                                 Pt=cms.double(5.0),
+                                 Pt=cms.double(20.0),
                                  minNumObjsToPassFilter=cms.uint32(1)
 )
 process.tauMuonAnalyzer=cms.EDAnalyzer(
@@ -470,7 +453,7 @@ process.muHadTauSelector = cms.EDFilter(
     overlapCandTag = cms.InputTag('Mu45Selector'),
     overlapCandTag1= cms.InputTag('HighestPtAndMuonOppositeSignDR'),
     passDiscriminator = cms.bool(True),
-    pTMin = cms.double(5.0),
+    pTMin = cms.double(20.0),
     etaMax = cms.double(2.3),
     isoMax = cms.double(-1.0),
     dR = cms.double(0.5),
@@ -491,12 +474,12 @@ process.noSelectedOutput = cms.OutputModule(
     "PoolOutputModule",
     SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('p')),
     outputCommands = skimEventContent.outputCommands,
-    fileName = cms.untracked.string('DYHighMass_data_no_selection.root')
+    fileName = cms.untracked.string('ZZ_data_no_selection.root')
     )
 
 #sequences
 process.MuMuSequenceSelector=cms.Sequence(
-#       process.TriggerAnalyzer0
+#       process.TriggerAnalyzer0*
 	process.MuonIWant*
         process.HighestPtAndMuonOppositeSignDRSelector*
         process.Mu1Mu2PtRankMuonID*
@@ -525,7 +508,7 @@ process.noSelectionSequence = cms.Sequence(process.MuMuSequenceSelector*
 ## process.p = cms.Path(process.antiSelectionSequence)
 ## process.e = cms.EndPath(process.antiSelectedOutput)
 process.TFileService = cms.Service("TFileService",
-    fileName =  cms.string('DYHighMass_HLTSubfilter_Tfile.root')
+    fileName =  cms.string('ZZ_HLTSubfilter_Tfile.root')
 )
 #no selection path
 process.p = cms.Path(process.noSelectionSequence)
