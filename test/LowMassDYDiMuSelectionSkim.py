@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 from subprocess import *
 import FWCore.Utilities.FileUtils as FileUtils
-mylist=FileUtils.loadListFromFile('/afs/cern.ch/work/m/mshi/private/CMSSW_8_0_17/src/GGHAA2Mu2TauAnalysis/Kyle.txt')
+mylist=FileUtils.loadListFromFile('/afs/cern.ch/work/m/mshi/private/CMSSW_8_0_17/src/GGHAA2Mu2TauAnalysis/LowMassDY.txt')
 process = cms.Process("SKIM")
 
 #PDG IDs
@@ -54,7 +54,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1000)
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True),
                 SkipEvent = cms.untracked.vstring('ProductNotFound'))
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100000) )
 process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring(*mylist))
 
 process.source.inputCommands = cms.untracked.vstring("keep *")
@@ -295,7 +295,7 @@ process.genTauMuSelector = cms.EDFilter(
 
 
 process.filter_1 = hlt.hltHighLevel.clone(
-    TriggerResultsTag=cms.InputTag("TriggerResults", "","HLT2" ),
+    TriggerResultsTag=cms.InputTag("TriggerResults", "","HLT" ),
     HLTPaths = [ 'HLT_Mu45_eta2p1_v3'],
     throw = True
     )
@@ -316,14 +316,14 @@ process.Mu45Selector = cms.EDFilter(
     'MuonTriggerObjectFilter',
     recoObjTag = cms.InputTag('PtEtaCut'),
     genParticleTag = cms.InputTag('genParticles'),
-    triggerEventTag = cms.untracked.InputTag("hltTriggerSummaryAOD", "", "HLT2"),#for sure it's HLT2 since this is the only tuple in edmDumpEventContent
-    triggerResultsTag = cms.untracked.InputTag("TriggerResults", "", "HLT2"),#selections are only SIM, RECO or HLT2
+    triggerEventTag = cms.untracked.InputTag("hltTriggerSummaryAOD", "", "HLT"),#for sure it's HLT2 since this is the only tuple in edmDumpEventContent
+    triggerResultsTag = cms.untracked.InputTag("TriggerResults", "", "HLT"),#selections are only SIM, RECO or HLT2
     MatchCut = cms.untracked.double(0.01),
-    hltTags = cms.VInputTag(cms.InputTag("HLT_Mu45_eta2p1_v3", "", "HLT2")
+    hltTags = cms.VInputTag(cms.InputTag("HLT_Mu45_eta2p1_v2", "", "HLT")
                             ),
-    theRightHLTTag = cms.InputTag("HLT_Mu45_eta2p1_v3","","HLT2"),#TTBar background is v2
-    #theRightHLTSubFilter1 = cms.InputTag("hltL3fL1sMu16orMu25L1f0L2f10QL3Filtered45e2p1Q","","HLT2"),#v2
-     theRightHLTSubFilter1 = cms.InputTag("hltL3fL1sMu22Or25L1f0L2f10QL3Filtered45e2p1Q","","HLT2"),
+    theRightHLTTag = cms.InputTag("HLT_Mu45_eta2p1_v2","","HLT"),#TTBar background is v2
+    theRightHLTSubFilter1 = cms.InputTag("hltL3fL1sMu16orMu25L1f0L2f10QL3Filtered45e2p1Q","","HLT"),#v2
+    # theRightHLTSubFilter1 = cms.InputTag("hltL3fL1sMu22Or25L1f0L2f10QL3Filtered45e2p1Q","","HLT"), #v3
     HLTSubFilters = cms.untracked.VInputTag(""),
     minNumObjsToPassFilter1= cms.uint32(1),
     outFileName=cms.string("Mu45Selector.root")
@@ -492,7 +492,7 @@ process.noSelectedOutput = cms.OutputModule(
 
 #sequences
 process.MuMuSequenceSelector=cms.Sequence(
-#       process.TriggerAnalyzer0*
+    #   process.TriggerAnalyzer0*
 	process.MuonIWant*
         process.HighestPtAndMuonOppositeSignDRSelector*
         process.Mu1Mu2PtRankMuonID*

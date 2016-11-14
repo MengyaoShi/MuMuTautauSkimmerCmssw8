@@ -60,7 +60,7 @@ private:
 };
 
 TriggerAnalyzer::TriggerAnalyzer(const edm::ParameterSet& iConfig) :
-  HLTProcessName_(iConfig.getUntrackedParameter<std::string>("HLTProcessName", "HLT2")),
+  HLTProcessName_(iConfig.getUntrackedParameter<std::string>("HLTProcessName", "HLT")),
   triggerResultsTag_(iConfig.getUntrackedParameter<edm::InputTag>("triggerResultsTag", 
 								  edm::InputTag("TriggerResults", 
 										"", 
