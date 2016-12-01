@@ -45,6 +45,9 @@ Before scram b, change mshi to ktos
 Ok, now double check, you have CMSSW_8_0_17/src , inside this folder there are only two folders GGHAA2Mu2TauAnalysis and Tools, inside GGHAA2Mu2TauAnlysis there is only MuMuTauTauSkimmer and DAS_test_Signal.txt
 
 scram b
+cd MuMuTauTauSkimmer/test
+cmsRun SignalDiMuSelectionSkim.py
 
-Comment out Mu45Selector in test/DiMuSelectorSkim.py And you are done! You should start from here work on tau tags.
+You should add b tagging code in SignalDiMuSelectionSkim.py
+
 
