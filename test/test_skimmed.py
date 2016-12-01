@@ -23,7 +23,8 @@ process.MuMuTauTauRecoAnalyzer=cms.EDAnalyzer(
         Mu1Mu2= cms.InputTag('Isolation'),
         genParticleTag=cms.InputTag('genParticles'),
         muHadMassBins=cms.vdouble(0.0, 1.0, 2.0,3.0,4.0, 12.0),
-        FourBInvMassBins=cms.vdouble(0.0, 200.0,400.0,600.0, 800.0, 1000.0)
+        FourBInvMassBins=cms.vdouble(0.0, 200.0,400.0,600.0, 800.0, 1000.0),
+        outFileName=cms.string("muHadMassPlot.root")
 )
 process.Mu1Mu2Analyzer=cms.EDAnalyzer(
   'Mu1Mu2Analyzer',

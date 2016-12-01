@@ -1,12 +1,12 @@
 import FWCore.ParameterSet.Config as cms
 from subprocess import *
 import FWCore.Utilities.FileUtils as FileUtils
-mylist=FileUtils.loadListFromFile('/afs/cern.ch/work/m/mshi/private/CMSSW_8_0_17/src/GGHAA2Mu2TauAnalysis/testWZJ_afterskim.txt')
+mylist=FileUtils.loadListFromFile('/afs/cern.ch/work/m/mshi/private/CMSSW_8_0_17/src/GGHAA2Mu2TauAnalysis/testDYLowMass_afterskim.txt')
 process = cms.Process("testOutput1")
 
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1)
+process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1000)
 
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True),
                 SkipEvent = cms.untracked.vstring('ProductNotFound'))
@@ -22,8 +22,9 @@ process.MuMuTauTauRecoAnalyzer=cms.EDAnalyzer(
  jetMuonMapTag=cms.InputTag('CleanJets','muonValMap','SKIM'),
         Mu1Mu2= cms.InputTag('Isolation'),
         genParticleTag=cms.InputTag('genParticles'),
-        muHadMassBins=cms.vdouble(0.0, 1.0, 2.0,3.0,4.0, 12.0),
-        FourBInvMassBins=cms.vdouble(0.0, 200.0,400.0,600.0, 800.0, 1000.0)
+        muHadMassBins=cms.vdouble(1,2,3,4,12),
+        FourBInvMassBins=cms.vdouble(0.0, 200.0,400.0,600.0, 800.0, 1000.0),
+        outFileName=cms.string("muHadMassPlot.root")
 )
 process.Mu1Mu2Analyzer=cms.EDAnalyzer(
   'Mu1Mu2Analyzer',

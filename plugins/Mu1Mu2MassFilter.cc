@@ -105,7 +105,7 @@ Mu1Mu2MassFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
    double invMass=0;
    invMass=((*pMu1Mu2)[0]->p4()+(*pMu1Mu2)[1]->p4()).M();
 
-   if(invMass >= 20.0)
+   if(invMass >= 40.0)
       return false;
    else{
       std::auto_ptr<reco::MuonRefVector> muonColl(new reco::MuonRefVector);
