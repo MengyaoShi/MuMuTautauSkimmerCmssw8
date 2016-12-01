@@ -12,7 +12,7 @@ Reciepe:
 
 cmsrel CMSSW_8_0_17
 
-cd src
+cd CMSSW_8_0_17/src
 
 cmsenv
 
