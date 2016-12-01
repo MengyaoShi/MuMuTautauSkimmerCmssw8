@@ -5,8 +5,6 @@ This Skimmer do basically job to skim down dataset to what we are interested. te
 
 python file.
 
-Mu45Selector is the trigger I have not made it work yet, comment out that line, and you can start from here add tau-related tags.
-
 
 Reciepe: 
 
