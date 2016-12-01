@@ -1,7 +1,7 @@
 # MuMuTauTauSkimmer
 In CMSSW8
 
-This Skimmer do basically job to skim down dataset of Drell-Yan background to what we are interested. test/DiMuSelectorSkim.py is the corresponding
+This Skimmer do basically job to skim down dataset to what we are interested. test/SignalDiMuSelectionSkim.py is the corresponding
 
 python file.
 
