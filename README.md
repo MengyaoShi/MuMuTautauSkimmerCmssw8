@@ -38,7 +38,7 @@ cd ..
 
 git clone https://github.com/MengyaoShi/Tools
 
-Before scram b, change mshi to ktos
+Before scram b, change mshi to ktos in SignalDiMuSelectionSkim.py and make sure the path being correct
 
 Ok, now double check, you have CMSSW_8_0_17/src , inside this folder there are only two folders GGHAA2Mu2TauAnalysis and Tools, inside GGHAA2Mu2TauAnlysis there is only MuMuTauTauSkimmer and DAS_test_Signal.txt
 
