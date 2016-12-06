@@ -14,6 +14,10 @@ cd CMSSW_8_0_17/src
 
 cmsenv
 
+source /cvmfs/cms.cern.ch/crab3/crab.sh
+
+voms-proxy-init --voms cms --valid 168:00
+
 mkdir GGHAA2Mu2TauAnalysis
 
 cd GGHAA2Mu2TauAnalysis
@@ -43,9 +47,15 @@ Before scram b, change mshi to ktos in SignalDiMuSelectionSkim.py and make sure 
 Ok, now double check, you have CMSSW_8_0_17/src , inside this folder there are only two folders GGHAA2Mu2TauAnalysis and Tools, inside GGHAA2Mu2TauAnlysis there is only MuMuTauTauSkimmer and DAS_test_Signal.txt
 
 scram b
+
 cd MuMuTauTauSkimmer/test
+
 cmsRun SignalDiMuSelectionSkim.py
 
-You should add b tagging code in SignalDiMuSelectionSkim.py
+In the end, when you want to submit it to crab, be in "test/crabConfig" folder of repository "MuMuTautauSkimmerCmssw8". And do
+
+crab submit -c crabConfig_SignalH125a09.py
+
+
 
 
