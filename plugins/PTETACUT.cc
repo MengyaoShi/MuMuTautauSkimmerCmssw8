@@ -113,7 +113,7 @@ PTETACUT::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
        recoObjs->begin(); iRecoObj != recoObjs->end();
        ++iRecoObj) 
   {
-    if((abs((*iRecoObj)->eta())<Eta_ ||(Eta_==-1))&& (*iRecoObj)->pt()>Pt_)
+    if((fabs((*iRecoObj)->eta())<Eta_ ||(Eta_==-1))&& (*iRecoObj)->pt()>Pt_)
     {
       muonColl->push_back(*iRecoObj);
       nPassingMuons++;

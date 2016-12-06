@@ -109,7 +109,7 @@ MuonPartner::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
        recoObjs->begin(); iRecoObj != recoObjs->end();
        ++iRecoObj) 
   {
-    if(abs((*iRecoObj)->eta())<2.1&& abs((*iRecoObj)->pt())>5.0)
+    if(fabs((*iRecoObj)->eta())<2.1&& fabs((*iRecoObj)->pt())>5.0)
     {
       muonColl->push_back(*iRecoObj);
       nPassingMuons++;

@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 from subprocess import *
 import FWCore.Utilities.FileUtils as FileUtils
-mylist=FileUtils.loadListFromFile('/afs/cern.ch/work/m/mshi/private/CMSSW_8_0_17/src/GGHAA2Mu2TauAnalysis/Kyle.txt')
+mylist=FileUtils.loadListFromFile('/afs/cern.ch/work/m/mshi/private/CMSSW_8_0_17/src/GGHAA2Mu2TauAnalysis/DrellYan.txt')
 process = cms.Process("SKIM")
 
 #PDG IDs
@@ -49,12 +49,12 @@ TAU_RARE = 15
 ANY_PT_RANK = -1
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1000)
+process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(100)
 
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True),
                 SkipEvent = cms.untracked.vstring('ProductNotFound'))
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring(*mylist))
 
 process.source.inputCommands = cms.untracked.vstring("keep *")
@@ -176,6 +176,7 @@ skimEventContent = cms.PSet(
 process.load("RecoBTag.Configuration.RecoBTag_cff")
 process.load("RecoJets.JetAssociationProducers.ak4JTA_cff")
 # configure the softMuonByIP3d ESProducer and EDProducer
+from RecoBTag.Configuration.RecoBTag_cff import *
 from RecoBTag.SoftLepton.softLepton_cff import *
 from RecoBTag.ImpactParameter.impactParameter_cff import *
 from RecoBTag.SecondaryVertex.secondaryVertex_cff import *
@@ -221,35 +222,33 @@ process.HighestPtAndMuonOppositeSignDRSelector=cms.EDFilter('HighestPtAndMuonOpp
 					       dRCut=cms.double(1.5),
                                                Mu2PtCut=cms.double(15.0)
 )
+
 process.Mu1Mu2PtRankMuonID=cms.EDFilter(
   'HighestSecondHighestPtSelector',
   muonTag=cms.InputTag('HighestPtAndMuonOppositeSignDRSelector'),
   vtxTag= cms.InputTag('offlinePrimaryVertices'),
   muon1ID=cms.string('tightNew'),
-  muon2ID=cms.string('tightNew')#tightNew is another option
+  muon2ID=cms.string('loose')#tightNew is another option
 )
-process.Mu1Mu2MassSelection=cms.EDFilter(
- 'Mu1Mu2MassFilter',
- Mu1Mu2=cms.InputTag('Mu1Mu2PtRankMuonID')
+
+process.Mu1Mu2EtaCut=cms.EDFilter('PTETACUT',
+                                 muonTag=cms.InputTag('Mu1Mu2PtRankMuonID'),
+                                 Eta=cms.double(2.4),
+                                 Pt=cms.double(0.0),
+                                 minNumObjsToPassFilter=cms.uint32(2)
+
 )
 process.Mu1Mu2Analyzer=cms.EDAnalyzer(
   'Mu1Mu2Analyzer',
   genParticleTag=cms.InputTag('genParticles'),
-  Mu1Mu2=cms.InputTag('Mu1Mu2MassSelection'),
+  Mu1Mu2=cms.InputTag('Mu1Mu2EtaCut'),
   particleFlow=cms.InputTag('particleFlow'),
   Mu2PtBins=cms.vdouble(0.0,3.0, 6.0, 9.0, 12.0,15.0, 18.0, 21.0, 24.0, 27.0, 30.0, 33.0, 36.0, 39.0, 42.0, 48.0, 54.0, 60.0, 66.0, 72.0, 78.0, 84.0, 90.0, 96.0, 102.0, 108.0,116.0, 124.0, 130.0, 136.0, 142.0, 148.0, 154.0, 160.0, 166.0, 172.0, 180.0, 186.0, 192.0, 200.0 ),
   invMassBins=cms.vdouble(0.0 ,20.0,40.0,60.0, 80.0,100.0,120.0,140,160,180,200,500)
 
 )
-process.Isolation=cms.EDFilter('CustomDimuonSelector',
-                                muonTag=cms.InputTag('Mu1Mu2MassSelection'),
-                                isoMax=cms.double(1.0),
-                                baseMuonTag = cms.InputTag('muons'),
-                                particleFlow=cms.InputTag('particleFlow'),
-                                minNumObjsToPassFilter=cms.uint32(2)
-                                )
 process.PtEtaCut = cms.EDFilter('PTETACUT',
-                                 muonTag=cms.InputTag('Isolation'),
+                                 muonTag=cms.InputTag('Mu1Mu2EtaCut'),
                                  Eta=cms.double(2.1),
                                  Pt=cms.double(45.0),
                                  minNumObjsToPassFilter=cms.uint32(1)
@@ -312,6 +311,7 @@ process.genMatchedSelector = cms.EDFilter(
     Bins=cms.vdouble(2.0,4.0),                 #dR criteria for matching
     minNumGenObjectsToPassFilter = cms.uint32(1) #EDFilter returns true if >=1 gen-matched reco muon is found
     )
+                                
 process.Mu45Selector = cms.EDFilter(
     'MuonTriggerObjectFilter',
     recoObjTag = cms.InputTag('PtEtaCut'),
@@ -322,28 +322,11 @@ process.Mu45Selector = cms.EDFilter(
     hltTags = cms.VInputTag(cms.InputTag("HLT_Mu45_eta2p1_v3", "", "HLT2")
                             ),
     theRightHLTTag = cms.InputTag("HLT_Mu45_eta2p1_v3","","HLT2"),#TTBar background is v2
-    #theRightHLTSubFilter1 = cms.InputTag("hltL3fL1sMu16orMu25L1f0L2f10QL3Filtered45e2p1Q","","HLT2"),#v2
-     theRightHLTSubFilter1 = cms.InputTag("hltL3fL1sMu22Or25L1f0L2f10QL3Filtered45e2p1Q","","HLT2"),
+    theRightHLTSubFilter1 = cms.InputTag("hltL3fL1sMu22Or25L1f0L2f10QL3Filtered45e2p1Q","","HLT2"),
     HLTSubFilters = cms.untracked.VInputTag(""),
     minNumObjsToPassFilter1= cms.uint32(1),
     outFileName=cms.string("Mu45Selector.root")
 )
-                                
-process.MuonVetoMu45=cms.EDFilter(
-    'VetoMuon',
-    muonTag=cms.InputTag('Isolation'),
-    vetoMuonTag=cms.InputTag('Mu45Selector'),
-    dRCut=cms.double(0),
-    genParticleTag = cms.InputTag('genParticles'), 
-    minNumObjsToPassFilter=cms.uint32(1)
-)
-process.triggerMuonAnalyzer=cms.EDAnalyzer(
-        'triggerMuonAnalyzer',
-        Mu1Mu2 = cms.InputTag('MuonVetoMu45'),
-        triggerMuon=cms.InputTag('Mu45Selector'),
-        Mu1Mu2NoVeto=cms.InputTag('Isolation')
-)
-
 
 process.AMuTriggerAnalyzer=cms.EDAnalyzer(
    'AMuTriggerAnalyzer',
@@ -357,7 +340,7 @@ process.AMuTriggerAnalyzer=cms.EDAnalyzer(
 
 process.Mu3=cms.EDFilter('VetoMuon',
   muonTag=cms.InputTag('MuonIWant'),
-  vetoMuonTag=cms.InputTag('Isolation'),
+  vetoMuonTag=cms.InputTag('Mu1Mu2EtaCut'),
   dRCut=cms.double(0.5),
   genParticleTag = cms.InputTag('genParticles'),
   minNumObjsToPassFilter=cms.uint32(1)
@@ -376,11 +359,8 @@ process.Mu3ID = cms.EDFilter('CustomMuonSelector',
                                        etaMax = cms.double(2.4),
                                        minNumObjsToPassFilter = cms.uint32(1)
                                        )
-process.HighestPtMu3=cms.EDFilter('HighestPtSelector',
-                                  muonTag=cms.InputTag('Mu3ID')
-)
 process.tauMuonPtSelector=cms.EDFilter('PTETACUT',
-                                 muonTag=cms.InputTag('HighestPtMu3'),
+                                 muonTag=cms.InputTag('Mu3ID'),
                                  Eta=cms.double(2.4),
                                  Pt=cms.double(5.0),
                                  minNumObjsToPassFilter=cms.uint32(1)
@@ -389,7 +369,7 @@ process.tauMuonAnalyzer=cms.EDAnalyzer(
  	'tauMuonAnalyzer',
  	genParticleTag = cms.InputTag('genParticles'),
 	thirdHighestPtMuon=cms.InputTag('tauMuonPtSelector'),
-	Mu1Mu2=cms.InputTag('Isolation'),
+	Mu1Mu2=cms.InputTag('Mu1Mu2MassSelection'),
         Mu3PtBins=cms.vdouble(0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0, 100.0, 200.0, 300.0),
         Mu3dRBins=cms.vdouble(0.0, 0.4, 0.8, 1.2, 1.6,2.0, 2.4, 2.8, 3.2, 3.6, 4.0,  4.4, 4.8, 5.2)
 
@@ -439,7 +419,6 @@ process.combinatoricRecoTaus.jetSrc = cms.InputTag('CleanJets', 'ak4PFJetsNoMu',
 
 process.recoTauCommonSequence = cms.Sequence(   process.Mu3*
 						process.Mu3ID*
-                                                process.HighestPtMu3*
 						process.tauMuonPtSelector*
 						process.CleanJets*
 						process.ak4PFJetTracksAssociatorAtVertex*
@@ -450,6 +429,51 @@ process.recoTauCommonSequence = cms.Sequence(   process.Mu3*
 
 process.PFTau = cms.Sequence(process.recoTauCommonSequence*process.recoTauClassicHPSSequence) # Kyle Changed  This
 
+from RecoBTag.Configuration.RecoBTag_cff import *
+from RecoBTag.SoftLepton.softLepton_cff import *
+from RecoBTag.ImpactParameter.impactParameter_cff import *
+from RecoBTag.SecondaryVertex.secondaryVertex_cff import *
+from RecoBTag.Combined.combinedMVA_cff import *
+from RecoBTag.CTagging.RecoCTagging_cff import *
+from RecoVertex.AdaptiveVertexFinder.inclusiveVertexing_cff import *
+process.pfImpactParameterTagInfos.jets = cms.InputTag('CleanJets', 'ak4PFJetsNoMu', 'SKIM')
+process.softPFMuonsTagInfos.jets = cms.InputTag('CleanJets', 'ak4PFJetsNoMu', 'SKIM')
+process.softPFElectronsTagInfos.jets = cms.InputTag('CleanJets', 'ak4PFJetsNoMu', 'SKIM')
+
+process.pfBTagging = cms.Sequence(
+    (
+      # impact parameters and IP-only algorithms
+      pfImpactParameterTagInfos *
+      ( pfTrackCountingHighEffBJetTags +
+        pfJetProbabilityBJetTags +
+        pfJetBProbabilityBJetTags +
+
+        # SV tag infos depending on IP tag infos, and SV (+IP) based algos
+        pfSecondaryVertexTagInfos *
+        ( pfSimpleSecondaryVertexHighEffBJetTags +
+          pfCombinedSecondaryVertexV2BJetTags
+        )
+        + inclusiveCandidateVertexing *
+        pfInclusiveSecondaryVertexFinderTagInfos *
+        pfSimpleInclusiveSecondaryVertexHighEffBJetTags *
+        pfCombinedInclusiveSecondaryVertexV2BJetTags
+
+      ) +
+
+      # soft lepton tag infos and algos
+      softPFMuonsTagInfos *
+      softPFMuonBJetTags
+      + softPFElectronsTagInfos *
+      softPFElectronBJetTags
+    ) *
+
+    # overall combined taggers
+    ( #CSV + soft-lepton + jet probability discriminators combined
+      pfCombinedMVAV2BJetTags
+
+    )
+)
+
 #find taus in |eta| < 2.4 matched to muon-tagged cleaned jets
 #this will produce a ref to the cleaned tau collection
 process.muHadTauSelector = cms.EDFilter(
@@ -458,16 +482,16 @@ process.muHadTauSelector = cms.EDFilter(
     tauHadIsoTag = cms.InputTag('hpsPFTauDiscriminationByCombinedIsolationDeltaBetaCorrRaw3Hits', '',
                                 'SKIM'),
     tauDiscriminatorTags = cms.VInputTag(
-    cms.InputTag('hpsPFTauDiscriminationByDecayModeFindingOldDMs', '', 'SKIM'),
-    cms.InputTag('hpsPFTauDiscriminationByMediumIsolationMVArun2v1DBoldDMwLT','','SKIM')
+    cms.InputTag('hpsPFTauDiscriminationByDecayModeFindingOldDMs', '', 'SKIM')
+    #cms.InputTag('hpsPFTauDiscriminationByMediumIsolationMVArun2v1DBoldDMwLT','','SKIM')
     ),
     jetTag = cms.InputTag('CleanJets', 'ak4PFJetsNoMu', 'SKIM'),
     muonRemovalDecisionTag = cms.InputTag('CleanJets','valMap','SKIM'),
     overlapCandTag = cms.InputTag('Mu45Selector'),
     overlapCandTag1= cms.InputTag('HighestPtAndMuonOppositeSignDR'),
     passDiscriminator = cms.bool(True),
-    pTMin = cms.double(5.0),
-    etaMax = cms.double(2.3),
+    pTMin = cms.double(10.0),
+    etaMax = cms.double(2.4),
     isoMax = cms.double(-1.0),
     dR = cms.double(0.5),
     minNumObjsToPassFilter = cms.uint32(1),
@@ -477,7 +501,7 @@ process.RECOAnalyze=cms.EDAnalyzer(
         'MuMuTauTauRecoAnalyzer',
         tauTag=cms.InputTag('muHadTauSelector','','SKIM'),
         jetMuonMapTag=cms.InputTag('CleanJets','muonValMap','SKIM'),
-        Mu1Mu2= cms.InputTag('Isolation'),
+        Mu1Mu2= cms.InputTag('Mu1Mu2MassSelection'),
         genParticleTag=cms.InputTag('genParticles'),
         muHadMassBins=cms.vdouble(0.0, 2.0, 4.0, 6.0, 8.0, 10.0,12.0, 20.0),
         FourBInvMassBins=cms.vdouble(0.0, 200.0,400.0,600.0, 800.0, 1000.0)
@@ -496,19 +520,15 @@ process.MuMuSequenceSelector=cms.Sequence(
 	process.MuonIWant*
         process.HighestPtAndMuonOppositeSignDRSelector*
         process.Mu1Mu2PtRankMuonID*
-        process.Mu1Mu2MassSelection*
-#        process.Mu1Mu2Analyzer
-       process.Isolation*
+        process.Mu1Mu2EtaCut*
         process.PtEtaCut*
-#        process.genAMuSelector*
-#        process.genMatchedSelector*     
-#        process.filter_1
         process.Mu45Selector
 #        process.tauMuonAnalyzer
 )
 
 process.noSelectionSequence = cms.Sequence(process.MuMuSequenceSelector*
                                            process.PFTau*
+                                           process.pfBTagging*
                                            process.muHadTauSelector
                                           # process.tauMuonAnalyzer*
                                           # process.btagging
