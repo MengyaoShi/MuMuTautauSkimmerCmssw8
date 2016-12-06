@@ -1,18 +1,16 @@
 # MuMuTauTauSkimmer
 In CMSSW8
 
-This Skimmer do basically job to skim down dataset of Drell-Yan background to what we are interested. test/DiMuSelectorSkim.py is the corresponding
+This Skimmer do basically job to skim down dataset to what we are interested. test/SignalDiMuSelectionSkim.py is the corresponding
 
 python file.
-
-Mu45Selector is the trigger I have not made it work yet, comment out that line, and you can start from here add tau-related tags.
 
 
 Reciepe: 
 
 cmsrel CMSSW_8_0_17
 
-cd src
+cd CMSSW_8_0_17/src
 
 cmsenv
 
@@ -24,17 +22,15 @@ git clone https://github.com/MengyaoShi/MuMuTautauSkimmerCmssw8
 
 mv MuMuTautauSkimmerCmssw8 MuMuTauTauSkimmer
 
-vim DrellYan.txt
+vim DAS_test_Signal.txt
 
 i
 
 copy paste this into txt
 
-root://eoscms.cern.ch//eos/cms/store/user/mshi/DrellYanCmssw8.root
+root://144.92.180.64:31094///store/mc/RunIISpring16DR80/SUSYGluGluToHToAA_AToMuMu_AToTauTau_M-9_TuneCUETP8M1_13TeV_madgraph_pythia8/AODSIM/premix_withHLT_80X_mcRun2_asymptotic_v14-v1/60000/04052E3D-19A3-E611-A7C5-0CC47AA9906E.root
 
-( I copied this root file to my eos space as DrellYanCmssw8.root root://159.93.229.144:1095///store/mc/RunIISpring16reHLT80/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/AODSIM/PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/40000/003A70D5-E55C-E611-9B14-0025905C53A8.root)
 
-(/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16reHLT80-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/AODSIM)
 
 :wq
 
@@ -42,11 +38,14 @@ cd ..
 
 git clone https://github.com/MengyaoShi/Tools
 
-Before scram b, change mshi to ktos
+Before scram b, change mshi to ktos in SignalDiMuSelectionSkim.py and make sure the path being correct
 
-Ok, now double check, you have CMSSW_8_0_17/src , inside this folder there are only two folders GGHAA2Mu2TauAnalysis and Tools, inside GGHAA2Mu2TauAnlysis there is only MuMuTauTauSkimmer and DrellYan.txt
+Ok, now double check, you have CMSSW_8_0_17/src , inside this folder there are only two folders GGHAA2Mu2TauAnalysis and Tools, inside GGHAA2Mu2TauAnlysis there is only MuMuTauTauSkimmer and DAS_test_Signal.txt
 
 scram b
+cd MuMuTauTauSkimmer/test
+cmsRun SignalDiMuSelectionSkim.py
 
-Comment out Mu45Selector in test/DiMuSelectorSkim.py And you are done! You should start from here work on tau tags.
+You should add b tagging code in SignalDiMuSelectionSkim.py
+
 
